@@ -21,6 +21,7 @@ This is a **modern markdown editor** inspired by Vercel's design.
 3. See your changes in real-time
 
 ## Example Code
+  const [showExportDropdown, setShowExportDropdown] = useState(false)
 \`\`\`javascript
 function hello() {
   console.log("Hello, Markdown!");
@@ -105,9 +106,18 @@ function App() {
           />
         </div>
       </main>
+          {/* Export Dropdown */}
+          {showExportDropdown && (
+            <div className="fixed inset-0 z-40" onClick={() => setShowExportDropdown(false)}>
+              <div className="absolute right-4 top-16 z-50">
+                <ExportDropdown markdown={markdown} onClose={() => setShowExportDropdown(false)} />
+              </div>
+            </div>
+          )}
+          
+    </div>
             <ExportDropdown markdown={markdown} />
             
-    </div>
   )
 }
 

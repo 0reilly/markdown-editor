@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import MarkdownEditor from './components/MarkdownEditor'
 import MarkdownPreview from './components/MarkdownPreview'
 import Toolbar from './components/Toolbar'
@@ -35,7 +35,9 @@ Made with ❤️ by SWEET CLI Agent`
 
 function App() {
   const [markdown, setMarkdown] = useState(initialMarkdown)
-  const [isSplitView, setIsSplitView] = useState(true)
+  const [isSplitView, setIsSplitView] = useState(() => JSON.parse(localStorage.getItem('markdown-editor-split-view') || 'true'))
+  const [isSaved, setIsSaved] = useState(true)
+  const [showExportDropdown, setShowExportDropdown] = useState(false)
 
   const handleMarkdownChange = useCallback((newMarkdown) => {
     setMarkdown(newMarkdown)
@@ -44,6 +46,34 @@ function App() {
   const insertText = useCallback((textToInsert) => {
     setMarkdown(prev => prev + textToInsert)
   }, [])
+
+  // Load saved content on component mount
+  useEffect(() => {
+    const savedMarkdown = localStorage.getItem('markdown-editor-content')
+    if (savedMarkdown) {
+      setMarkdown(savedMarkdown)
+    }
+    
+    const savedSplitView = localStorage.getItem('markdown-editor-split-view')
+    if (savedSplitView !== null) {
+      setIsSplitView(JSON.parse(savedSplitView))
+    }
+  }, [])
+
+  // Auto-save markdown content with debouncing
+  useEffect(() => {
+    setIsSaved(false)
+    const timeoutId = setTimeout(() => {
+      localStorage.setItem('markdown-editor-content', markdown)
+      setIsSaved(true)
+    }, 500)
+    return () => clearTimeout(timeoutId)
+  }, [markdown])
+
+  // Save view preference immediately
+  useEffect(() => {
+    localStorage.setItem('markdown-editor-split-view', JSON.stringify(isSplitView))
+  }, [isSplitView])
 
   return (
     <div className="min-h-screen bg-vercel-gray-50">
@@ -61,6 +91,39 @@ function App() {
                 <h1 className="text-xl font-semibold text-vercel-gray-900">Markdown Editor</h1>
                 <p className="text-sm text-vercel-gray-500">Write beautiful notes with markdown</p>
               </div>
+            </div>
+            
+            {/* Save Status */}
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${isSaved ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`}></div>
+              <span className={`text-sm ${isSaved ? 'text-vercel-gray-500' : 'text-vercel-gray-700'}`}>
+                {isSaved ? (
+                  <span className="flex items-center">
+                    <svg className="w-3 h-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Saved
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+          {/* Export Dropdown */}
+          {showExportDropdown && (
+            <div className="fixed inset-0 z-40" onClick={() => setShowExportDropdown(false)}>
+              <div className="absolute right-4 top-16 z-50">
+                <ExportDropdown markdown={markdown} onClose={() => setShowExportDropdown(false)} />
+              </div>
+            </div>
+          )}
+          
+                    <svg className="w-3 h-3 mr-1 text-yellow-500 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <ExportDropdown markdown={markdown} />
+            
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Saving...
+                  </span>
+                )}
+              </span>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -105,8 +168,6 @@ function App() {
           />
         </div>
       </main>
-            <ExportDropdown markdown={markdown} />
-            
     </div>
   )
 }

@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react'
 import MarkdownEditor from './components/MarkdownEditor'
 import MarkdownPreview from './components/MarkdownPreview'
 import Toolbar from './components/Toolbar'
-import ExportDropdown from './components/ExportDropdown'
 
 const initialMarkdown = `# Welcome to Your Markdown Editor
 
@@ -105,8 +104,6 @@ function App() {
           />
         </div>
       </main>
-            <ExportDropdown markdown={markdown} />
-            
     </div>
   )
 }
