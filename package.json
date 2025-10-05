@@ -1,0 +1,30 @@
+{
+  "name": "markdown-editor",
+  "version": "1.0.0",
+  "description": "A modern markdown note editor with Tailwind CSS inspired by Vercel",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.3.0",
+    "vite": "^4.4.0"
+  },
+  "keywords": ["markdown", "editor", "react", "tailwind", "vercel"],
+  "author": "SWEET CLI Agent",
+  "license": "MIT"
+}
