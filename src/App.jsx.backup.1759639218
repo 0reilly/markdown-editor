@@ -1,0 +1,125 @@
+import React, { useState, useCallback } from 'react'
+import MarkdownEditor from './components/MarkdownEditor'
+import MarkdownPreview from './components/MarkdownPreview'
+import Toolbar from './components/Toolbar'
+
+import DocumentsSidebar from './components/DocumentsSidebar'
+import { loadDocuments, createDocument, updateDocument, deleteDocument, duplicateDocument } from './utils/documentUtils'
+const initialMarkdown = `# Welcome to Your Markdown Editor
+
+This is a **modern markdown editor** inspired by Vercel's design.
+
+## Features
+- ✨ **Real-time preview**
+- 🎨 **Beautiful UI** with Tailwind CSS
+- 📝 **Easy formatting** with toolbar
+- 💾 **Auto-save** functionality
+- 📱 **Responsive design**
+
+## Getting Started
+1. Start typing in the editor
+2. Use the toolbar for quick formatting
+3. See your changes in real-time
+
+## Example Code
+\`\`\`javascript
+function hello() {
+  console.log("Hello, Markdown!");
+}
+\`\`\`
+    if (currentDocument) {
+      const updatedDocs = updateDocument(documents, currentDocument.id, { content: newMarkdown })
+      setDocuments(updatedDocs)
+    }
+  }, [currentDocument, documents])
+
+---
+    if (currentDocument) {
+      const newContent = currentDocument.content + textToInsert
+      const updatedDocs = updateDocument(documents, currentDocument.id, { content: newContent })
+      setDocuments(updatedDocs)
+    }
+  }, [currentDocument, documents])
+
+function App() {
+  const [markdown, setMarkdown] = useState(initialMarkdown)
+  const [documents, setDocuments] = useState([])
+  const [currentDocumentId, setCurrentDocumentId] = useState(null)
+  const [isSplitView, setIsSplitView] = useState(true)
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const currentDocument = documents.find(doc => doc.id === currentDocumentId) || documents[0]
+  const handleMarkdownChange = useCallback((newMarkdown) => {
+    setMarkdown(newMarkdown)
+  }, [])
+
+  const insertText = useCallback((textToInsert) => {
+    setMarkdown(prev => prev + textToInsert)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-vercel-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-vercel-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-vercel-blue-600 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-vercel-gray-900">Markdown Editor</h1>
+                <p className="text-sm text-vercel-gray-500">Write beautiful notes with markdown</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setIsSplitView(!isSplitView)}
+                className="inline-flex items-center px-3 py-2 border border-vercel-gray-300 rounded-md text-sm font-medium text-vercel-gray-700 bg-white hover:bg-vercel-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vercel-blue-500"
+              >
+                {isSplitView ? (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                    </svg>
+                    Split View
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    Editor Only
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Toolbar onInsertText={insertText} />
+        
+        <div className={`grid gap-6 ${isSplitView ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+          <MarkdownEditor 
+            markdown={markdown} 
+            onChange={handleMarkdownChange}
+            className={!isSplitView ? 'hidden' : ''}
+          />
+          <MarkdownPreview 
+            markdown={markdown}
+            className={!isSplitView ? 'col-span-2' : ''}
+          />
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default App
